@@ -2,14 +2,13 @@ import numpy as np
 import mrcfile as mf
 import scipy as sp
 
-zika_file = mf.open('zika_153.mrc')
+zika_file = mf.open('zika_153.mrc')  #give the full path to the file here
 
 
 def project_fast(rho, a, b):
   rho_hat = np.fft.fftn(np.fft.fftshift(rho))
   
-  N = length of rho 
-  #get this^ later
+  N = length(rho)
   
   for i in range(N):
     for j in range(N):
@@ -24,7 +23,7 @@ def project_fast(rho, a, b):
   
   #sample rho_hat
   from sp import RegularGridInterpolator as RGI
-  rho_hat_f = RGI(rho_hat) + 1*j*RGI(rho_hat)         #check this j
+  rho_hat_f = sp.interpolate.RGI(rho_hat, CHECK THIS )
   
   imageab = rho_hat_f(grid)
   
