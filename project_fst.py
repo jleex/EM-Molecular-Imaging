@@ -5,7 +5,7 @@ import scipy as sp
 zika_file = mf.open('zika_153.mrc')
 
 
-def project_fast(rho, a, b)
+def project_fast(rho, a, b):
   rho_hat = np.fft.fftn(np.fft.fftshift(rho))
   
   N = length of rho 
@@ -32,8 +32,7 @@ def project_fast(rho, a, b)
   realfinalimage = np.real(finalimage)
   
   from matplotlib import pyplot as plt
-  
-  %matplotlib
+
   plt.imshow(realfinalimage)
 
 
