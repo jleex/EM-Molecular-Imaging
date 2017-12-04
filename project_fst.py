@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator as RGI
 from numpy.fft import fftn, fftshift, ifft2
 
-zika_file = mrcfile.open('zika_153.mrc', mode='r+')
+zika_file = mrcfile.open('/Users/joellee/Desktop/zika_153.mrc', mode='r+')
 mol = zika_file.data
 
 def project_fst(rho, R):
@@ -39,3 +39,14 @@ project_fst(mol, random_rotation_matrix())
 image = project_fst(mol, random_rotation_matrix())
 plt.imshow(image)
 plt.show()
+
+###written by joel below
+##
+##
+##num = int(input('number of images you want'))
+##N = 0
+##
+##rotationmatrix = random_rotation_matrix()
+##image = project_fst(mol, rotationmatrix)
+##np.savetxt('/Users/joellee/Desktop/Images/image.txt', image)
+##N = N + 1
