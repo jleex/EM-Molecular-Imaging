@@ -39,12 +39,12 @@ def multiex(times):      #implemented by Joel to multiexport files
     for t in np.arange(times):
         rotationmatrix = random_rotation_matrix()
         image = project_fst(mol, rotationmatrix)
-        np.savetxt('/Users/joellee/Desktop/Images/image_%i.txt' %t, image)
+        np.savetxt('/Users/joellee/Desktop/Images/%i_image.txt' %t, image)
         
         plt.imshow(image)
         plt.show()
         
-        np.savetxt('/Users/joellee/Desktop/Images/orientation_%i.txt' %t, rotationmatrix)
+        np.savetxt('/Users/joellee/Desktop/Images/%i_orientation.txt' %t, rotationmatrix)
 
 
 ##image = project_fst(mol, random_rotation_matrix())
