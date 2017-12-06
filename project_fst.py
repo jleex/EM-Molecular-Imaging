@@ -34,19 +34,24 @@ def random_rotation_matrix():
 
     return np.array([e_1, e_2, e_3]).T
 
-project_fst(mol, random_rotation_matrix())
+def multiex(times):      #implemented by Joel to multiexport files
 
-image = project_fst(mol, random_rotation_matrix())
-plt.imshow(image)
-plt.show()
+    for t in np.arange(times):
+        rotationmatrix = random_rotation_matrix()
+        image = project_fst(mol, rotationmatrix)
+        np.savetxt('/Users/joellee/Desktop/Images/image_%i.txt' %t, image)
+        
+        plt.imshow(image)
+        plt.show()
+        
+        np.savetxt('/Users/joellee/Desktop/Images/orientation_%i.txt' %t, rotationmatrix)
+
+
+##image = project_fst(mol, random_rotation_matrix())
+##plt.imshow(image)
+##plt.show()
 
 ###written by joel below
-##
-##
-##num = int(input('number of images you want'))
-##N = 0
-##
-##rotationmatrix = random_rotation_matrix()
-##image = project_fst(mol, rotationmatrix)
-##np.savetxt('/Users/joellee/Desktop/Images/image.txt', image)
-##N = N + 1
+
+times = int(input('Please input the number of images you would like'))
+multiex(times)
