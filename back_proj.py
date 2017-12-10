@@ -5,12 +5,12 @@ from scipy.interpolate import RegularGridInterpolator as RGI
 from scipy.interpolate import griddata as gd
 import glob
 import os
+from itertools import product
 
 def back_proj():
-    m = 0
-    b = np.zeros((153,153,153), np.float32)             #watch out for this and makes sure to change the dimension to the image resolutions
+    b_ = np.zeros((153,153,153), np.float32)             #watch out for this and makes sure to change the dimension to the image resolutions
     abini = np.zeros((3,3))
-
+    
     for filename in glob.glob(os.path.join('/Users/joellee/Desktop/Images', '*_image.txt')):
         for aibici in glob.glob(os.path.join('/Users/joellee/Desktop/Images', '*_orientation.txt')):
             if filename[30:31] == aibici[30:31]:
@@ -36,32 +36,55 @@ def back_proj():
 
                 b_hat = np.multiply(image_hat3, l_hat3)
                 
-                b_hatR = np.zeros((N,N,N))
-                b_hat_Rot = np.zeros((N,N,N))
-                b_space = np.linspace(0,N,N)
-                
-                b_hatR = RGI((b_space,b_space,b_space), b_hat, method='linear', bounds_error=False)
-                
-                if m == 0:
-                    abcini = abc
-                else:
-                    for i in np.arange(N-1):
-                        for j in np.arange(N-1):
-                            for k in np.arange(N-1):
-                                sample_point = np.array([i, j, k])
-                                conv_sam_pt = np.matmul(sample_point, abc)
-                                print(conv_sam_pt)
-                                print(conv_sam_pt[0])
-                                b_hat_Rot[i,j,k] = b_hatR[conv_sam_pt[0], conv_sam_pt[1], conv_sam_pt[2]]
+                b_space = np.linspace((1-N)/2,(N-1)/2,N)
 
                 
-                b = b + np.fft.ifftn(np.fft.ifftshift(b_hat_Rot)) #figure this rotating the grid thingy
-                m = m + 1
+                #build a grid to eval RGI on
 
-    b = np.real(b)
-    b = np.float32(b)
+                xcoor = np.array(b_space)
+                ycoor = np.array(b_space)
+                zcoor = np.array(b_space)
+                xctr, yctr, zctr = xcoor+(N-1)/2, ycoor+(N-1)/2, zcoor+(N-1)/2
+                a = abc[:,0]
+                b = abc[:,1]
+                c = abc[:,2]
+
+                x_rot = (xcoor[:, np.newaxis]*a)+(N-1)/2
+                print(x_rot)
+                y_rot = (ycoor[:, np.newaxis]*b)+(N-1)/2
+                z_rot = (zcoor[:, np.newaxis]*c)+(N-1)/2
+                x_rot = x_rot[:,0]
+                y_rot = y_rot[:,0]
+                z_rot = z_rot[:,0]
+
+                if x_rot[0] >= x_rot[15]:
+                    x_rot = x_rot[::-1]
+                if y_rot[0] >= y_rot[15]:
+                    y_rot = y_rot[::-1]
+                if z_rot[0] >= z_rot[15]:
+                    z_rot = z_rot[::-1]
+                
+                b_ini = np.fft.ifftn(np.fft.ifftshift(b_hat))
+                b_ini_real = np.real(b_ini)
+                
+                b_f = RGI((x_rot,y_rot,z_rot), b_ini_real, method='linear', bounds_error=False, fill_value=0)
+
+                b_int = np.zeros((N,N,N))
+                for i in np.arange(N-1):
+                    for j in np.arange(N-1):
+                        for k in np.arange(N-1):
+                            b_int[i,j,k] = b_f(np.array([i, j, k]))        #figure this rotating the grid thingy
+                                            
+                b_ = b_ + b_int
+                print(b_.shape)
+                print(b_int.shape)
+                print(b_)
+                print(b_int)
+    
+    b_ = np.real(b_)
+    b_ = np.float32(b_)
     output = mf.new('/Users/joellee/Desktop/images/back_proj.mrc')
-    output.set_data(b)
+    output.set_data(b_)
     output.close()
 
 ##    b_hat = np.real(b_hat)
