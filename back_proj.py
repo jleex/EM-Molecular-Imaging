@@ -50,7 +50,6 @@ def back_proj():
                 c = abc[:,2]
 
                 x_rot = (xcoor[:, np.newaxis]*a)+(N-1)/2
-                print(x_rot)
                 y_rot = (ycoor[:, np.newaxis]*b)+(N-1)/2
                 z_rot = (zcoor[:, np.newaxis]*c)+(N-1)/2
                 x_rot = x_rot[:,0]
@@ -76,10 +75,6 @@ def back_proj():
                             b_int[i,j,k] = b_f(np.array([i, j, k]))        #figure this rotating the grid thingy
                                             
                 b_ = b_ + b_int
-                print(b_.shape)
-                print(b_int.shape)
-                print(b_)
-                print(b_int)
     
     b_ = np.real(b_)
     b_ = np.float32(b_)
