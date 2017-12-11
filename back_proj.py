@@ -37,7 +37,6 @@ def back_proj(directory):
                 b_hat = np.multiply(image_hat3, l_hat3)
                 
                 b_space = np.linspace((1-N)/2,(N-1)/2,N)
-
                 
                 #build a grid to eval RGI on
 
@@ -93,7 +92,7 @@ def back_proj(directory):
                 import time
                 t0 = time.time()
                 b_int = b_int.reshape(N, N, N)
-                print 'now only takes %s seconds' % (time.time() - t0)
+                print( 'now only takes %s seconds' % (time.time() - t0))
                 b_ = b_ + b_int
     
     b_ = np.real(b_)
@@ -133,7 +132,7 @@ def back_proj(directory):
 ##    output.close()
 
 def main():
-    directory = '/Users/michael/Documents/tmp/EM-Molecular-Imaging/data/'
+    directory = '/Users/joellee/Desktop/Images/'
     back_proj(directory)
 
 
