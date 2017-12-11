@@ -93,7 +93,7 @@ def back_proj(directory):
                 import time
                 t0 = time.time()
                 b_int = b_int.reshape(N, N, N)
-                print 'now only takes %s seconds' % (t1 - time.time())
+                print 'now only takes %s seconds' % (time.time() - t0)
                 b_ = b_ + b_int
     
     b_ = np.real(b_)
