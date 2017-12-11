@@ -35,12 +35,12 @@ def back_proj():
                 image_hat3 = np.tile(image_hat, (N,1,1))
 
                 b_hat = np.multiply(image_hat3, l_hat3)
+
+
                 
                 b_space = np.linspace((1-N)/2,(N-1)/2,N)
-
-                
                 #build a grid to eval RGI on
-
+                
                 xcoor = np.array(b_space)
                 ycoor = np.array(b_space)
                 zcoor = np.array(b_space)
@@ -49,13 +49,14 @@ def back_proj():
                 b = abc[:,1]
                 c = abc[:,2]
 
-                x_rot = (xcoor[:, np.newaxis]*a)+(N-1)/2
+                x_rot = (xcoor[:, np.newaxis]*a)+(N-1)/2      #skews/compresses the curve tho   
                 y_rot = (ycoor[:, np.newaxis]*b)+(N-1)/2
                 z_rot = (zcoor[:, np.newaxis]*c)+(N-1)/2
+
                 x_rot = x_rot[:,0]
                 y_rot = y_rot[:,0]
                 z_rot = z_rot[:,0]
-
+                
                 if x_rot[0] >= x_rot[15]:
                     x_rot = x_rot[::-1]
                 if y_rot[0] >= y_rot[15]:
@@ -65,14 +66,20 @@ def back_proj():
                 
                 b_ini = np.fft.ifftn(np.fft.ifftshift(b_hat))
                 b_ini_real = np.real(b_ini)
-                
-                b_f = RGI((x_rot,y_rot,z_rot), b_ini_real, method='linear', bounds_error=False, fill_value=0)
+
+                abcinv = np.linalg.inv(abc)
+
+##                b_f = RGI((x_rot,y_rot,z_rot), b_ini_real, method='linear', bounds_error=False, fill_value=0)
+                b_f = RGI((xctr,yctr,zctr), b_ini_real, method='linear', bounds_error=False, fill_value=0)
 
                 b_int = np.zeros((N,N,N))
                 for i in np.arange(N-1):
                     for j in np.arange(N-1):
                         for k in np.arange(N-1):
-                            b_int[i,j,k] = b_f(np.array([i, j, k]))        #figure this rotating the grid thingy
+                            vec = np.array([i,j,k])-(N-1)/2
+                            vecR = np.matmul(abcinv,vec)+(N-1)/2
+                            b_int[i,j,k] = b_f(vecR)
+
                                             
                 b_ = b_ + b_int
     
