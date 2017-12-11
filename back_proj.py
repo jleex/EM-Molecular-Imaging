@@ -7,12 +7,12 @@ import glob
 import os
 from itertools import product
 
-def back_proj():
+def back_proj(directory):
     b_ = np.zeros((153,153,153), np.float32)             #watch out for this and makes sure to change the dimension to the image resolutions
     abini = np.zeros((3,3))
     
-    for filename in glob.glob(os.path.join('/Users/joellee/Desktop/Images', '*_image.txt')):
-        for aibici in glob.glob(os.path.join('/Users/joellee/Desktop/Images', '*_orientation.txt')):
+    for filename in glob.glob(os.path.join(directory, '*_image.txt')):
+        for aibici in glob.glob(os.path.join(directory, '*_orientation.txt')):
             if filename[30:31] == aibici[30:31]:
                 image = np.loadtxt(filename)
                 abc = np.loadtxt(aibici)
@@ -68,17 +68,37 @@ def back_proj():
                 
                 b_f = RGI((x_rot,y_rot,z_rot), b_ini_real, method='linear', bounds_error=False, fill_value=0)
 
-                b_int = np.zeros((N,N,N))
-                for i in np.arange(N-1):
-                    for j in np.arange(N-1):
-                        for k in np.arange(N-1):
-                            b_int[i,j,k] = b_f(np.array([i, j, k]))        #figure this rotating the grid thingy
-                                            
+                # pass in points to b_f, think of it as a N x N x N grid
+                # create crid of something like (N = 2):
+                # array([[[[ 0.,  0.,  0.],
+                #          [ 0.,  0.,  1.]],
+
+                #         [[ 0.,  1.,  0.],
+                #          [ 0.,  1.,  1.]]],
+
+
+                #        [[[ 1.,  0.,  0.],
+                #          [ 1.,  0.,  1.]],
+
+                #         [[ 1.,  1.,  0.],
+                #          [ 1.,  1.,  1.]]]])
+                pts = np.zeros((N, N, N, 3))
+                for i in range(N):
+                    pts[i, :, :, 0] = i
+                    pts[:, i, :, 1] = i
+                    pts[:, :, i, 2] = i
+                pts = pts.reshape(-1, 3)
+
+                b_int = b_f(pts)
+                import time
+                t0 = time.time()
+                b_int = b_int.reshape(N, N, N)
+                print 'now only takes %s seconds' % (t1 - time.time())
                 b_ = b_ + b_int
     
     b_ = np.real(b_)
     b_ = np.float32(b_)
-    output = mf.new('/Users/joellee/Desktop/images/back_proj.mrc')
+    output = mf.new(directory + '/back_proj.mrc')
     output.set_data(b_)
     output.close()
 
@@ -112,5 +132,10 @@ def back_proj():
 ##    output.set_data(l_hat3)
 ##    output.close()
 
+def main():
+    directory = '/Users/michael/Documents/tmp/EM-Molecular-Imaging/data/'
+    back_proj(directory)
 
-back_proj()
+
+if __name__ == '__main__':
+    main()

@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator as RGI
 from numpy.fft import fftn, fftshift, ifft2
 
-zika_file = mrcfile.open('/Users/joellee/Desktop/zika_153.mrc', mode='r+')
-mol = zika_file.data
 
 def project_fst(rho, R):
     N = rho.shape[0]
@@ -34,24 +32,31 @@ def random_rotation_matrix():
 
     return np.array([e_1, e_2, e_3]).T
 
-def multiex(times):      #implemented by Joel to multiexport files
+def multiex(times, mol, output_dir):      #implemented by Joel to multiexport files
 
     for t in np.arange(times):
         rotationmatrix = random_rotation_matrix()
         image = project_fst(mol, rotationmatrix)
-        np.savetxt('/Users/joellee/Desktop/Images/%i_image.txt' %t, image)
+        np.savetxt('%s%i_image.txt' % (output_dir, t), image)
         
         plt.imshow(image)
         plt.show()
         
-        np.savetxt('/Users/joellee/Desktop/Images/%i_orientation.txt' %t, rotationmatrix)
+        np.savetxt('%s%i_orientation.txt' % (output_dir, t), rotationmatrix)
 
 
 ##image = project_fst(mol, random_rotation_matrix())
 ##plt.imshow(image)
 ##plt.show()
 
-###written by joel below
+def main():
+    directory = '/Users/michael/Documents/tmp/EM-Molecular-Imaging/data/'
+    file_name = directory + 'zika_153.mrc'
+    zika_file = mrcfile.open(file_name, mode='r+')
+    mol = zika_file.data
+    times = int(input('Please input the number of images you would like'))
+    multiex(times, mol, directory)
 
-times = int(input('Please input the number of images you would like'))
-multiex(times)
+###written by joel below
+if __name__ == '__main__':
+    main()
